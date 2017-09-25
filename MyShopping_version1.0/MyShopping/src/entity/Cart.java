@@ -3,27 +3,39 @@ package entity;
 public class Cart {
 
 	private Integer cid;
-	private String btitle;
 	private String bimgurl;
+	private String btitle;
+	private Double bprice;
 	private Integer bcount;
 	private Integer bid;
 	
-	public Cart() {}
-
-	public Cart( String btitle, String bimgurl, Integer bcount,
-			Integer bid) {
-		this.btitle = btitle;
-		this.bimgurl = bimgurl;
+	public Cart() {
+		
+	}
+	
+	public Cart(Integer bcount, Integer bid) {
+		
 		this.bcount = bcount;
 		this.bid = bid;
 	}
 
-	public Cart(Integer cid, String btitle, String bimgurl, Integer bcount,
-			Integer bid) {
+	public Cart( String bimgurl, String btitle, Double bprice,
+			Integer bcount, Integer bid) {
 		
-		this.cid = cid;
-		this.btitle = btitle;
 		this.bimgurl = bimgurl;
+		this.btitle = btitle;
+		this.bprice = bprice;
+		this.bcount = bcount;
+		this.bid = bid;
+	}
+
+	public Cart(Integer cid, String bimgurl, String btitle, Double bprice,
+			Integer bcount, Integer bid) {
+	
+		this.cid = cid;
+		this.bimgurl = bimgurl;
+		this.btitle = btitle;
+		this.bprice = bprice;
 		this.bcount = bcount;
 		this.bid = bid;
 	}
@@ -36,6 +48,14 @@ public class Cart {
 		this.cid = cid;
 	}
 
+	public String getBimgurl() {
+		return bimgurl;
+	}
+
+	public void setBimgurl(String bimgurl) {
+		this.bimgurl = bimgurl;
+	}
+
 	public String getBtitle() {
 		return btitle;
 	}
@@ -44,12 +64,12 @@ public class Cart {
 		this.btitle = btitle;
 	}
 
-	public String getBimgurl() {
-		return bimgurl;
+	public Double getBprice() {
+		return bprice;
 	}
 
-	public void setBimgurl(String bimgurl) {
-		this.bimgurl = bimgurl;
+	public void setBprice(Double bprice) {
+		this.bprice = bprice;
 	}
 
 	public Integer getBcount() {
@@ -70,13 +90,12 @@ public class Cart {
 
 	@Override
 	public String toString() {
-		return "Cart [cid=" + cid + ", btitle=" + btitle + ", bimgurl="
-				+ bimgurl + ", bcount=" + bcount + ", bid=" + bid + "]";
+		return "Cart [cid=" + cid + ", bimgurl=" + bimgurl + ", btitle="
+				+ btitle + ", bprice=" + bprice + ", bcount=" + bcount
+				+ ", bid=" + bid + "]";
 	}
-  
 	
 	
-
 	
 	
 	

@@ -9,8 +9,9 @@
   </head>
   
   <body>
-
-   <h5 style="background-color: red;">${requestScope.msg }	 </h5>
+  
+   <h5 style="background-color: red;">${msg }</h5>
+   
    <c:if test="${empty sessionScope.user }">
   	<form action="shop?action=loginCheck" method="post">
   		用户名:<input type="text" name="name"/>
@@ -20,6 +21,7 @@
   </c:if>
   <c:if test="${not empty sessionScope.user }">
   	<h2> 欢迎${sessionScope.user.uname }来到藏书阁!</h2>
+  	<a href="indexCart.jsp">我的购物车</a>
   </c:if>  
    	 
    	 	<table>

@@ -20,6 +20,8 @@ import entity.User;
 
 public class ShopServlet extends HttpServlet {
 
+	private static final long serialVersionUID = 1L;
+
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doPost(request, response);
@@ -37,12 +39,12 @@ public class ShopServlet extends HttpServlet {
 			(action, new Class[]{HttpServletRequest.class,HttpServletResponse.class});
 			String url = (String)method.invoke(this, new Object[]{request,response});
 		    request.getRequestDispatcher(url).forward(request, response);
-		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+	
+	//显示全部书籍方法
 	public String getAllBook(HttpServletRequest request,HttpServletResponse response){
 		
 		BookDao bd = new BookDao();
@@ -51,8 +53,8 @@ public class ShopServlet extends HttpServlet {
 		return "showAllBook.jsp";
 	}
 	
-	
-	public String loginCheck(HttpServletRequest request,HttpServletResponse response) throws IOException{
+	//登录验证方法
+	public String loginCheck(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException{
 		String name = request.getParameter("name");
 		String pwd = request.getParameter("pwd");
 		String str = "用户名或密码错误,请重新登陆!";
@@ -64,11 +66,25 @@ public class ShopServlet extends HttpServlet {
 			session.setAttribute("user", u);
 			return "index.jsp";
 		}else{
-			request.setAttribute("msg", str);
-		    return "index.jsp";
+			 request.setAttribute("msg", str);
+		     return "index.jsp";
 		}
 	}
-	
+	public String loginCheck2(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException{
+		String name = request.getParameter("name");
+		String pwd = request.getParameter("pwd");
+		
+		UserDao ud = new UserDao();
+		User u = ud.loginCheck(name, pwd);
+		if (u != null) {
+			HttpSession session = request.getSession();
+			session.setAttribute("user", u);
+			return "showOrderForm.jsp";
+		}else{
+		     return "showOrderForm.jsp";
+		}
+	}
+	//通过id获取一本书,当点击书名时,触发此方法
 	public String getBookById(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException{
 		Integer bid = Integer.valueOf(request.getParameter("bid"));
 		BookDao bd = new BookDao();
@@ -77,26 +93,35 @@ public class ShopServlet extends HttpServlet {
 		if(b != null){
 			request.setAttribute("book", b);
 			return "showOneBook.jsp";
+		}else{
+			return "failed.jsp";
 		}
-		return "";
 	}
 	
+	//当点击添加到购物车时,触发此方法
 	public String addToCart(HttpServletRequest request,HttpServletResponse response){
+		CartDao cd = new CartDao();
+		
 		String bimgurl = request.getParameter("bimgurl");
 		Integer bid = Integer.valueOf(request.getParameter("bid"));
 		String btitle = request.getParameter("btitle");
-		
-		//
-		
-		Cart c = new Cart(btitle, bimgurl, 1, bid);
-		CartDao cd = new CartDao();
+		Double bprice = Double.valueOf(request.getParameter("bprice"));
+		//判断,如果cart中有此书籍,bcount加一
+		int newCount = 0;
+		if(cd.getCartById(bid) != null){
+			newCount = cd.getCartById(bid).getBcount() + 1;
+			Cart c = new Cart(newCount, bid);
+			cd.updateCart(c);
+			return "indexCart.jsp";
+		}//否则,将此书籍加到cart,bcount默认为1
+		Cart c = new Cart(bimgurl, btitle, bprice, 1, bid);
 		if(cd.addToCart(c)){
 			return "indexCart.jsp";
 		}
-		return "";
+		return "failed.jsp";
 	}
 	
-	
+	//显示购物车列表,添加购物车成功后,通过return "indexCart.jsp";触发此方法
 	public String showCart(HttpServletRequest request,HttpServletResponse response){
 		CartDao cd = new CartDao();
 		List<Cart> list = cd.showCart();
@@ -106,7 +131,60 @@ public class ShopServlet extends HttpServlet {
 		}else{
 			return "failed.jsp";
 		}
-		
+	}
+	//通过cid删除cart中的一条记录
+	public String delCartById(HttpServletRequest request,HttpServletResponse response){
+		Integer cid = Integer.valueOf(request.getParameter("cid"));
+		CartDao cd = new CartDao();
+		if(cd.delCartById(cid)){
+		   return "indexCart.jsp";
+		}else{
+			return "failed.jsp";
+		}
+	}
+	//在showCart.jsp页面中点击 “+”触发此方法,修改bcount 
+	public String plusCart(HttpServletRequest request,HttpServletResponse response){
+        Integer bid = Integer.valueOf(request.getParameter("bid"));
+		CartDao cd = new CartDao();
+		Integer newCount = cd.getCartById(bid).getBcount() + 1;
+		Cart c = new Cart(newCount, bid);
+		if(cd.updateCart(c)){
+			return "indexCart.jsp";
+		}else{
+			return "failed.jsp";
+		}
+	}
+	//在showCart.jsp页面中点击 “-”触发此方法,修改bcount 
+	public String cutCart(HttpServletRequest request,HttpServletResponse response){
+		CartDao cd = new CartDao();
+        Integer bid = Integer.valueOf(request.getParameter("bid"));
+    	Integer cid = Integer.valueOf(request.getParameter("cid"));
+    	//判断  当bcount等于1的时候,删除此记录
+        if( cd.getCartById(bid).getBcount() == 1){
+        	if(cd.delCartById(cid)){
+        		return "indexCart.jsp";
+        	}
+        	    return "failed.jsp";
+        }
+		Integer newCount = cd.getCartById(bid).getBcount() - 1;
+		Cart c = new Cart(newCount, bid);
+		if(cd.updateCart(c)){
+			return "indexCart.jsp";
+		}else{
+			return "failed.jsp";
+		}
 	}
 	
+	public String addToOrderForm(HttpServletRequest request,HttpServletResponse response){
+		Double totalPrice = Double.valueOf(request.getParameter("totalPrice"));
+		
+		HttpSession session = request.getSession();
+		
+		session.setAttribute("totalPrice", totalPrice);
+		
+		return "showOrderForm.jsp";
+	}
+	
+	
+	//*********************************************************************************
 }

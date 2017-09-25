@@ -21,7 +21,7 @@
    	 		</tr>	
    	 		<tr>
    	 		  <td>书名:</td>
-   	 		  <td>${requestScope.book.btitle } <input type="hidden" name="btitle" value="${requestScope.book.btitle }" /></td>
+   	 		  <td>${requestScope.book.btitle } <input type="hidden" name="btitle" value="${requestScope.book.btitle }" /> </td>
    	 		</tr>	
    	 		<tr>
    	 		  <td>作者:</td>
@@ -33,7 +33,7 @@
    	 		</tr>	
    	 		<tr>
    	 		  <td>价格:</td>
-   	 		  <td>${requestScope.book.bprice }</td>
+   	 		  <td>${requestScope.book.bprice } <input type="hidden" name="bprice" value="${requestScope.book.bprice }" /> </td>
    	 		</tr>  	 				
    	 	</table>
    	 	<input type="submit" value="加入购物车"/>

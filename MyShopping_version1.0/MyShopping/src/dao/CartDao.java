@@ -14,11 +14,12 @@ public class CartDao extends BaseDao implements CartIFS{
 
 	@Override
 	public boolean addToCart(Cart cart) {
-		String sql = "insert into cart values(?,?,?,?,?);";
+		String sql = "insert into cart values(?,?,?,?,?,?);";
 		Object[] objs = {
 			cart.getCid(),
-			cart.getBtitle(),
 			cart.getBimgurl(),
+			cart.getBtitle(),
+			cart.getBprice(),
 			cart.getBcount(),
 			cart.getBid()
 		};
@@ -39,10 +40,11 @@ public class CartDao extends BaseDao implements CartIFS{
 			while(rs.next()){
 				Cart c = new Cart();
 				c.setCid(rs.getInt(1));
-				c.setBtitle(rs.getString(2));
-				c.setBimgurl(rs.getString(3));
-				c.setBcount(rs.getInt(4));
-				c.setBid(rs.getInt(5));
+				c.setBimgurl(rs.getString(2));
+				c.setBtitle(rs.getString(3));
+				c.setBprice(rs.getDouble(4));
+				c.setBcount(rs.getInt(5));
+				c.setBid(rs.getInt(6));
 				list.add(c);
 			}
 			
@@ -52,6 +54,51 @@ public class CartDao extends BaseDao implements CartIFS{
 			DataBaseUtil.closeAll(conn, ps, rs);
 		}
 		return list;
+	}
+
+
+	@Override
+	public boolean updateCart(Cart cart) {
+		String sql = "update cart  set bcount = ? where bid = ?";
+		Object[] objs = {
+				cart.getBcount(),
+				cart.getBid()
+		};
+		return executeUpdate(sql, objs);
+	}
+
+	@Override
+	public Cart getCartById(Integer bid) {
+		String sql = "select bid,bcount from cart where bid = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = DataBaseUtil.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, bid);
+			rs = ps.executeQuery();
+			Cart c = null;
+			if(rs.next()){
+			    c = new Cart();
+				c.setBid(rs.getInt("bid"));
+				c.setBcount(rs.getInt("bcount"));
+			}
+			return c;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DataBaseUtil.closeAll(conn, ps, rs);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean delCartById(Integer bid) {
+		String sql = "delete from cart where cid = ?";
+		Object[] objs = {bid};
+		return executeUpdate(sql, objs);
 	}
 
 	
